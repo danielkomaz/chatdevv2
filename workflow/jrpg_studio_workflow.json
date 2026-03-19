@@ -1,0 +1,420 @@
+{
+  "studio_name": "PixelForge Studios",
+  "workflow_version": "2.0",
+  "game_engine": "Godot 4",
+  "art_style": "2D Pixel Art",
+  "genre": "JRPG",
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "phase_name": "Concept & Story",
+      "description": "Establish the foundational creative vision for the game. The Game Director defines the high-level concept, tone, and creative pillars. The Story Writer produces the world lore bible, playable race profiles, 3-act narrative outline, and main character roster. All subsequent phases depend on these artifacts being locked and approved.",
+      "assigned_roles": ["game_director", "story_writer"],
+      "lead_role": "game_director",
+      "inputs": [
+        "Studio creative brief",
+        "Target platform list",
+        "Inspirational reference games list",
+        "Initial genre and tone requirements"
+      ],
+      "outputs": [
+        "High Concept Document (1-page pitch)",
+        "World Lore Bible (world history, geography, factions)",
+        "Playable Race Profiles (5 races: stats tendency, innate ability, cultural identity)",
+        "3-Act Story Arc Outline",
+        "Main Character Roster (name, class, race, backstory summary)",
+        "Villain Profile and motivation document",
+        "Sidequest hooks list (15+ ideas)"
+      ],
+      "review_required": true,
+      "reviewer_role": "qa_agent",
+      "completion_criteria": [
+        "High Concept Document approved by Game Director",
+        "All 5 race profiles complete with stat tendencies and innate abilities defined",
+        "3-act arc has clear inciting incident, midpoint twist, and resolution",
+        "Main party has minimum 6 characters with distinct roles and backstories",
+        "QA Agent has reviewed for story consistency and no unresolved plot holes",
+        "Story Writer has signed off on narrative voice and tone consistency"
+      ]
+    },
+    {
+      "phase_id": "phase_2",
+      "phase_name": "Game Design Document",
+      "description": "Translate story and concept into formal mechanical design. The Game Designer authors the complete GDD covering all systems: combat, skills, magic, races, progression, items, UI, and world structure. The Game Director reviews and approves. This document is the single source of truth for development, art, and audio.",
+      "assigned_roles": ["game_designer", "game_director"],
+      "lead_role": "game_designer",
+      "inputs": [
+        "High Concept Document",
+        "World Lore Bible",
+        "Playable Race Profiles",
+        "3-Act Story Arc Outline",
+        "Main Character Roster"
+      ],
+      "outputs": [
+        "Full Game Design Document (GDD)",
+        "Combat System Specification (turn order, action menu, damage formulas)",
+        "Skill System Design (skill trees per class, MP costs, unlock levels)",
+        "Magic System Design (6 elemental schools, spell tiers I-III, AoE rules)",
+        "Race Ability Tables (innate passives and actives per race)",
+        "Progression Curve Document (XP tables, stat growth per level per class)",
+        "Item and Equipment Taxonomy (categories, stat modifiers, rarity tiers)",
+        "UI Flow Diagrams (battle UI, menu UI, world map UI)",
+        "Enemy Design Roster (30+ enemy types with stats, skills, drop tables)",
+        "Balance Spreadsheet (skill power vs. MP cost ratio validation)"
+      ],
+      "review_required": true,
+      "reviewer_role": "game_director",
+      "completion_criteria": [
+        "GDD covers all game systems with no ambiguous or undefined mechanics",
+        "All skill and spell tables are complete with no placeholder values",
+        "Progression curve has been validated — no runaway power spikes before endgame",
+        "Enemy roster includes boss enemies for each major story chapter",
+        "Game Director has formally approved the GDD",
+        "QA Agent has reviewed for mechanical consistency and balance edge cases"
+      ]
+    },
+    {
+      "phase_id": "phase_3",
+      "phase_name": "Development",
+      "description": "Implement all designed systems in Godot 4 using GDScript. The Core Developer builds the game architecture from the GDD specifications, producing modular, well-commented, and fully functional code. All core systems must be implemented, individually testable, and integrated before this phase closes.",
+      "assigned_roles": ["core_developer", "game_designer"],
+      "lead_role": "core_developer",
+      "inputs": [
+        "Full Game Design Document (GDD)",
+        "Combat System Specification",
+        "Skill System Design",
+        "Magic System Design",
+        "Race Ability Tables",
+        "Progression Curve Document",
+        "Item and Equipment Taxonomy"
+      ],
+      "outputs": [
+        "BattleManager autoload (turn queue, action resolution, damage calculation)",
+        "SkillSystem autoload (skill data registry, skill execution, cooldown tracking)",
+        "MagicSystem autoload (spell registry, elemental affinity matrix, casting logic)",
+        "PartyManager autoload (roster management, formation, active party slot logic)",
+        "ProgressionManager autoload (XP, leveling, stat growth, skill unlock)",
+        "InventoryManager autoload (items, equipment, consumable use)",
+        "SaveLoadManager autoload (JSON-based save/load with slot support)",
+        "DialogueSystem (scene-based dialogue runner, branching, flag support)",
+        "SceneTransitionManager (fade in/out, async scene loading)",
+        "All battle scene scripts (BattleScene.gd, EnemyAI.gd, BattleUI.gd)",
+        "All world map scripts (WorldMap.gd, PlayerController.gd, EncounterSystem.gd)",
+        "All menu scripts (MainMenu.gd, PauseMenu.gd, InventoryMenu.gd, SkillMenu.gd)"
+      ],
+      "review_required": true,
+      "reviewer_role": "qa_agent",
+      "completion_criteria": [
+        "All autoloads registered and functional in Godot 4 project",
+        "Battle system can run a full fight from start to win/lose condition",
+        "Skills and magic resolve correctly per GDD formulas",
+        "Party member death and revival work correctly",
+        "Save and load round-trip works with no data loss",
+        "Scene transitions complete without errors or orphaned nodes",
+        "QA Agent code review passed — GDScript style guide compliant",
+        "Game Tester has executed smoke test suite with zero critical bugs"
+      ]
+    },
+    {
+      "phase_id": "phase_4",
+      "phase_name": "Art Production",
+      "description": "Produce all visual assets for the game. The Game Artist defines the art direction, creates or specs all sprite sheets, tilesets, UI elements, character portraits, spell effects, and environmental art. All art must adhere to the defined pixel grid, palette, and animation standards.",
+      "assigned_roles": ["game_artist", "game_director"],
+      "lead_role": "game_artist",
+      "inputs": [
+        "Main Character Roster",
+        "Playable Race Profiles",
+        "Enemy Design Roster",
+        "UI Flow Diagrams",
+        "World Lore Bible (for environment themes)",
+        "GDD (for spell/skill visual references)"
+      ],
+      "outputs": [
+        "Art Direction Document (palette definitions, grid standards, style guide)",
+        "Character Sprite Sheets (all party members, all races — idle, walk, battle, death)",
+        "Enemy Sprite Sheets (all 30+ enemies — idle, attack, hurt, death)",
+        "Environment Tilesets (towns, dungeons, overworld, interiors — 16x16 tiles)",
+        "Battle Background Art (10+ unique battle environments)",
+        "Character Portrait Set (all speaking characters — neutral, happy, sad, angry, surprised)",
+        "UI Asset Kit (buttons, windows, icons, health/MP bars, cursor, menus)",
+        "Spell and Skill Effect Sprites (all 6 elements, all tiers — particle sheets)",
+        "World Map Tiles and Overworld Sprite",
+        "Logo and Title Screen Art",
+        "Item and Equipment Icon Set (all items in inventory taxonomy)"
+      ],
+      "review_required": true,
+      "reviewer_role": "game_director",
+      "completion_criteria": [
+        "All character sprites complete with walk and battle animation sets",
+        "Consistent palette used across all assets — no off-grid pixels",
+        "All UI elements match flow diagrams from GDD",
+        "Spell effect sprites cover all 6 elemental schools at all 3 tiers",
+        "Game Director has approved art direction and final asset set",
+        "QA Agent has reviewed for pixel grid alignment and palette compliance"
+      ]
+    },
+    {
+      "phase_id": "phase_5",
+      "phase_name": "Sound Design",
+      "description": "Compose, source, and catalogue all audio assets for the game. The Sound Designer defines the audio direction, creates music tracks for all environments and situations, and specs every SFX cue. All audio must be integrated with Godot's audio bus system and mapped to game events.",
+      "assigned_roles": ["sound_designer", "game_director"],
+      "lead_role": "sound_designer",
+      "inputs": [
+        "World Lore Bible (for thematic tone per region)",
+        "GDD (for audio cue trigger events)",
+        "Art Direction Document (for visual-audio synergy reference)",
+        "Battle System Specification (for battle audio cue mapping)"
+      ],
+      "outputs": [
+        "Audio Direction Document (tone, instrumentation, loop points, BPM ranges)",
+        "World Map Theme (looping, 2:00+ runtime)",
+        "Town Themes (3 distinct town archetypes — peaceful, bustling, mysterious)",
+        "Dungeon Themes (3 distinct dungeon types — cave, ruins, castle)",
+        "Battle Theme (normal encounters — high energy, looping)",
+        "Boss Battle Theme (climactic, layered, looping)",
+        "Victory Fanfare (short, punchy, satisfying)",
+        "Game Over Sting (melancholic, 5-10 seconds)",
+        "Level Up Jingle (celebratory, 3-5 seconds)",
+        "Title Screen Theme (atmospheric, sets tone)",
+        "SFX Library: UI (click, open, close, confirm, cancel, error)",
+        "SFX Library: Battle (sword swing, magic cast per element, skill activate, hit, miss, critical)",
+        "SFX Library: World (footsteps on 3 surfaces, door open/close, chest open, item pickup)",
+        "SFX Library: Status (poison tick, silence, stun, heal, revive)",
+        "Audio Integration Map (event trigger → audio file mapping JSON)"
+      ],
+      "review_required": true,
+      "reviewer_role": "game_director",
+      "completion_criteria": [
+        "All music tracks loop seamlessly at defined loop points",
+        "SFX library covers every audio event defined in the integration map",
+        "Audio files are in OGG format for Godot compatibility",
+        "Battle audio cues are timed to match animation frame events",
+        "Game Director has approved audio direction and final track list",
+        "QA Agent has reviewed audio integration map for completeness"
+      ]
+    },
+    {
+      "phase_id": "phase_6",
+      "phase_name": "Testing & QA",
+      "description": "Systematically test every feature, mechanic, and player path. The Game Tester authors and executes comprehensive test plans. The QA Agent performs a final cross-phase audit of all deliverables for consistency, compliance, and quality. All critical and high-severity bugs must be resolved before proceeding to launch.",
+      "assigned_roles": ["game_tester", "qa_agent"],
+      "lead_role": "qa_agent",
+      "inputs": [
+        "All Phase 3 code deliverables",
+        "All Phase 4 art assets",
+        "All Phase 5 audio assets",
+        "GDD (as test oracle)",
+        "Audio Integration Map"
+      ],
+      "outputs": [
+        "Master Test Plan document",
+        "Battle System Test Cases (100+ cases covering all mechanics)",
+        "Skill and Magic Interaction Test Matrix",
+        "Race Ability Trigger Test Cases",
+        "Party Management Test Cases (death, revival, swap, formation)",
+        "Save/Load Integrity Test Report",
+        "Scene Transition Regression Test Report",
+        "UI Responsiveness Test Report",
+        "Bug Report Registry (all found bugs with severity, repro steps, status)",
+        "QA Cross-Phase Audit Report (code style, art consistency, design balance, story consistency)",
+        "Sign-off Checklist (all critical bugs resolved, all QA gates passed)"
+      ],
+      "review_required": true,
+      "reviewer_role": "qa_agent",
+      "completion_criteria": [
+        "Zero critical severity bugs open",
+        "Zero high severity bugs open (or formally accepted with documented risk)",
+        "All 100+ battle system test cases passed",
+        "Save/load round-trip tested across all 3 save slots with no data corruption",
+        "All 6 elemental spell schools resolve correctly at all 3 tiers",
+        "Race innate abilities trigger correctly in all tested scenarios",
+        "QA Agent cross-phase audit report shows no unresolved consistency violations",
+        "Game Director has reviewed and accepted the QA sign-off checklist"
+      ]
+    },
+    {
+      "phase_id": "phase_7",
+      "phase_name": "Launch & Release",
+      "description": "Prepare and execute the game release across all target platforms. The Game Launcher configures Godot export presets, manages version tagging, writes release notes and store page copy, and defines the post-launch support plan. The QA Agent performs final pre-release validation.",
+      "assigned_roles": ["game_launcher", "qa_agent"],
+      "lead_role": "game_launcher",
+      "inputs": [
+        "QA Sign-off Checklist (all gates passed)",
+        "All built and tested game assets",
+        "Logo and Title Screen Art",
+        "Bug Report Registry (for known issues list)"
+      ],
+      "outputs": [
+        "Godot Export Presets file (Windows x64, Linux x64, macOS universal, Web/HTML5)",
+        "Export Build Artifacts (all platform binaries and web build)",
+        "Version Tag (SemVer: v1.0.0)",
+        "Release Notes (full feature list, known issues, credits)",
+        "itch.io Store Page Copy (title, short description, long description, tags)",
+        "Steam Page Copy (capsule art spec, description, system requirements)",
+        "Launch Checklist (pre-launch, launch day, post-launch verification steps)",
+        "Post-Launch Support Plan (hotfix policy, patch schedule, community channels)",
+        "Press Kit (screenshots, GIF captures, key art, fact sheet)"
+      ],
+      "review_required": true,
+      "reviewer_role": "qa_agent",
+      "completion_criteria": [
+        "All platform export builds complete and tested on target hardware",
+        "Web build loads correctly in Chrome, Firefox, and Edge",
+        "Version tag v1.0.0 created in repository",
+        "Release notes reviewed and approved by Game Director",
+        "Store pages complete with all required assets and metadata",
+        "QA Agent has performed final pre-release smoke test on all platform builds",
+        "Launch checklist signed off by Game Launcher and QA Agent"
+      ]
+    }
+  ],
+  "communication_protocol": {
+    "message_format": {
+      "role_from": "string — sending role ID",
+      "role_to": "string — receiving role ID or 'all'",
+      "phase": "string — current phase_id",
+      "message_type": "one of: deliverable | feedback | approval | question | escalation",
+      "subject": "string — brief subject line",
+      "body": "string — full message content",
+      "attachments": "array of artifact names being referenced",
+      "priority": "one of: low | normal | high | critical",
+      "timestamp": "ISO 8601 datetime string"
+    },
+    "escalation_path": [
+      "game_tester → qa_agent (bug reports and test failures)",
+      "qa_agent → game_director (phase gate failures)",
+      "game_designer → game_director (unresolvable balance conflicts)",
+      "core_developer → game_designer (implementation ambiguities in GDD)",
+      "game_artist → game_director (creative direction conflicts)",
+      "sound_designer → game_director (audio direction disputes)",
+      "game_launcher → game_director (release blockers)"
+    ],
+    "sync_meetings": [
+      {
+        "meeting_id": "kickoff",
+        "name": "Project Kickoff",
+        "timing": "Before Phase 1",
+        "attendees": ["game_director", "story_writer", "game_designer"],
+        "agenda": ["Align on creative vision", "Confirm race and genre selection", "Set Phase 1 timeline"]
+      },
+      {
+        "meeting_id": "gdd_review",
+        "name": "GDD Review & Approval",
+        "timing": "End of Phase 2",
+        "attendees": ["game_director", "game_designer", "core_developer", "game_artist", "sound_designer"],
+        "agenda": ["GDD walkthrough", "Cross-team feasibility review", "Formal approval or revision requests"]
+      },
+      {
+        "meeting_id": "alpha_review",
+        "name": "Alpha Build Review",
+        "timing": "End of Phase 3",
+        "attendees": ["game_director", "core_developer", "game_designer", "game_tester", "qa_agent"],
+        "agenda": ["Playable build demo", "Critical bug triage", "Art and audio integration status"]
+      },
+      {
+        "meeting_id": "gold_review",
+        "name": "Gold Master Review",
+        "timing": "End of Phase 6",
+        "attendees": ["game_director", "qa_agent", "game_launcher", "game_tester"],
+        "agenda": ["QA sign-off review", "Known issues acceptance", "Launch readiness confirmation"]
+      }
+    ]
+  },
+  "quality_gates": [
+    {
+      "gate_id": "qg_1",
+      "name": "Story Lock Gate",
+      "after_phase": "phase_1",
+      "enforced_by": "qa_agent",
+      "criteria": [
+        "World lore has no internal contradictions",
+        "All 5 race profiles are complete",
+        "Story arc has defined beginning, middle, and end",
+        "Character roster approved by Game Director"
+      ]
+    },
+    {
+      "gate_id": "qg_2",
+      "name": "GDD Approval Gate",
+      "after_phase": "phase_2",
+      "enforced_by": "game_director",
+      "criteria": [
+        "GDD is complete with no undefined mechanics",
+        "Balance spreadsheet shows no degenerate strategies",
+        "All race abilities are unique and thematically appropriate",
+        "UI flow diagrams cover all player-facing screens"
+      ]
+    },
+    {
+      "gate_id": "qg_3",
+      "name": "Code Review Gate",
+      "after_phase": "phase_3",
+      "enforced_by": "qa_agent",
+      "criteria": [
+        "All autoloads registered and stable",
+        "GDScript style guide compliance verified",
+        "No orphaned nodes or memory leaks detected",
+        "Core game loop playable end-to-end"
+      ]
+    },
+    {
+      "gate_id": "qg_4",
+      "name": "Art Consistency Gate",
+      "after_phase": "phase_4",
+      "enforced_by": "qa_agent",
+      "criteria": [
+        "All assets on defined pixel grid",
+        "Palette compliance verified across all sprites",
+        "Animation frame counts match spec",
+        "No missing assets from GDD asset list"
+      ]
+    },
+    {
+      "gate_id": "qg_5",
+      "name": "Audio Completeness Gate",
+      "after_phase": "phase_5",
+      "enforced_by": "qa_agent",
+      "criteria": [
+        "All audio events in integration map have corresponding audio files",
+        "All music tracks loop without audible gap",
+        "OGG format compliance for all files",
+        "Audio bus routing spec complete"
+      ]
+    },
+    {
+      "gate_id": "qg_6",
+      "name": "QA Sign-Off Gate",
+      "after_phase": "phase_6",
+      "enforced_by": "qa_agent",
+      "criteria": [
+        "Zero open critical bugs",
+        "Zero open high bugs (or all formally accepted)",
+        "All test cases executed and documented",
+        "Cross-phase audit clean"
+      ]
+    },
+    {
+      "gate_id": "qg_7",
+      "name": "Release Readiness Gate",
+      "after_phase": "phase_7",
+      "enforced_by": "game_launcher",
+      "criteria": [
+        "All platform builds verified",
+        "Store pages complete and submitted",
+        "Version tag created in repository",
+        "Post-launch support plan published"
+      ]
+    }
+  ],
+  "roles_registry": {
+    "game_director": "roles/game_director.json",
+    "game_designer": "roles/game_designer.json",
+    "core_developer": "roles/core_developer.json",
+    "game_artist": "roles/game_artist.json",
+    "sound_designer": "roles/sound_designer.json",
+    "game_tester": "roles/game_tester.json",
+    "qa_agent": "roles/qa_agent.json",
+    "game_launcher": "roles/game_launcher.json",
+    "story_writer": "roles/story_writer.json"
+  }
+}
