@@ -1,226 +1,264 @@
-# Agent Runner Guide — ChatDevV2 Workflow v3.0
+# Agent Runner Guide — ChatDevV2 v3.0 Multi-Agent Workflow
 
-## Overview: Why Multi-Agent?
-
-ChatDevV2 v2.0 assigned a single AI agent to an entire phase. A phase like Development required that one agent write all 13 scripts, all scene files, and all JSON data in a single session. This caused agents to hit session timeout limits (typically 59+ minutes) before completing their work, resulting in incomplete or truncated output.
-
-**v3.0 solves this by breaking every phase into focused sub-agents.** Each sub-agent:
-
-- Has **exactly one output file** (or one tightly-scoped folder of files)
-- Should complete in **under 10 minutes**
-- Reads only the files it needs from the repository
-- Hands off cleanly by committing its output to the repository
-
-This makes the workflow resumable, auditable, and compatible with any LLM platform.
+> **Audience:** Anyone running the ChatDevV2 v3.0 workflow on any LLM platform (ChatGPT, Claude, GitHub Copilot, local models, etc.)
 
 ---
 
-## Core Concepts
+## Overview
 
-| Term | Definition |
-|------|-----------|
-| **Sub-agent** | A single focused AI session with one scoped task and one output file |
-| **Role persona** | The system prompt defining how the AI should think and behave (stored in `roles/*.json`) |
-| **Output file** | The single file the sub-agent must produce and commit to the repository |
-| **depends_on** | A list of sub-agent IDs that must be committed before this sub-agent can run |
+The v3.0 workflow replaces the single-agent-per-phase model with **49 focused sub-agents** across 7 phases. Each sub-agent:
 
----
+- Has **exactly one output file**
+- Completes in **≤ 10 minutes**
+- Reads committed files as inputs
+- Commits one output file as its handoff
 
-## How to Run a Single Sub-Agent
-
-### Step 1: Identify the sub-agent to run
-
-Open `workflow/jrpg_studio_workflow.json` or `workflow/sub_agent_index.md` and find the sub-agent you want to run. Note its:
-- `sub_agent_id` (e.g. `p1_a2`)
-- `agent_name` (e.g. `World Lore Architect`)
-- `assumes_role` (e.g. `story_writer`)
-- `role_persona_file` (e.g. `roles/story_writer.json`)
-- `system_prompt_override` (optional extra instructions)
-- `inputs` (list of files to read from the repo)
-- `output_file` (the file you will commit after the session)
-- `scope` (the one-sentence task description)
-
-### Step 2: Check dependencies
-
-Look at the `depends_on` array. All listed sub-agent IDs must have their `output_file` committed to the repository before you proceed. Do not skip steps.
-
-### Step 3: Read the role persona
-
-Open the `role_persona_file` listed for this sub-agent (e.g. `roles/story_writer.json`). Copy the value of the `system_prompt` field. This is your AI system prompt.
-
-### Step 4: Prepare your AI session
-
-Start a new session in your LLM platform of choice. Set the system prompt to:
-[Paste the system_prompt from the role JSON here]
-
-ADDITIONAL INSTRUCTIONS FOR THIS TASK: [Paste the system_prompt_override from the sub-agent entry, if any]
-
-
-### Step 5: Write your user message
-
-Your user message should follow this template:
-
-You are now acting as [agent_name].
-
-Your task is to produce the file: [output_file]
-
-SCOPE: [scope]
-
-INPUTS — read and use the following content:
-
---- [input file 1 name] --- [paste the full content of input file 1 from the repository here]
-
---- [input file 2 name] --- [paste the full content of input file 2 from the repository here]
-
-[continue for all inputs]
-
-Now produce the complete content for [output_file]. Do not stop until the file is complete.
-
-Code
-
-### Step 6: Run the session
-
-Submit the message and let the agent complete its output. If the session is cut off, see **Resuming After Interruption** below.
-
-### Step 7: Commit the output
-
-Copy the agent's output and create (or update) the `output_file` in the repository. Commit with a message like:
-
-[sub_agent_id]: Complete [agent_name] output
-
-Code
-
-For example:
-p1_a2: Complete World Lore Architect output
-
-Code
-
-### Step 8: Proceed to the next sub-agent
-
-Once the file is committed, check the workflow for which sub-agent has `depends_on: ["this_id"]` and run it next.
+This design prevents session timeouts, makes every step resumable, and keeps each LLM session focused and high quality.
 
 ---
 
-## Running via GitHub Copilot
+## Prerequisites
 
-GitHub Copilot can run sub-agents directly in chat:
-
-1. Reference the workflow file: `@danielkomaz/chatdevv2` then describe the sub-agent task
-2. Ask: *"Please run sub-agent p1_a2 (World Lore Architect) from the jrpg_studio_workflow.json. Read docs/phase1/high_concept.md from the repo and produce docs/phase1/world_lore.md."*
-3. Copilot will adopt the story_writer persona and generate the output
-4. Ask Copilot to commit the file directly to the repository
-
-**Tip:** Always provide the sub-agent ID (e.g. `p1_a2`) when asking Copilot so it knows exactly what scope to work within.
+1. **Clone the repository** locally or access it via your LLM platform's file browsing.
+2. **Confirm `main` branch is up to date** before starting any phase.
+3. **Do not skip the QA sub-agent** at the end of each phase. The phase gate must PASS before the next phase begins.
 
 ---
 
-## Running via ChatGPT or Claude
+## How to Run a Sub-Agent
 
-1. **Start a fresh conversation** — never continue an old conversation for a new sub-agent
-2. Set the **system prompt** (Custom Instructions in ChatGPT, or a [S] message in Claude) to the role persona + override
-3. Paste your user message using the template from Step 5 above
-4. If the output is long, the model may truncate it — use the prompt: *"Continue from where you left off. Do not repeat content already written."*
-5. Assemble the full output and commit it
+### Step 1 — Identify the Sub-Agent
 
-**Recommended context management:** Paste input files inline in the user message rather than as attachments. This gives the model the most reliable access to the content.
+Open `workflow/jrpg_studio_workflow.json` and find the sub-agent you want to run. Each entry looks like:
 
----
+```json
+{
+  "sub_agent_id": "1.2",
+  "name": "world_lore_agent",
+  "role": "story_writer",
+  "title": "World Lore Bible Author",
+  "description": "Write the World Lore Bible: world history, geography, and major factions.",
+  "inputs": ["docs/phase_1/high_concept_document.md"],
+  "output_file": "docs/phase_1/world_lore_bible.md",
+  "estimated_minutes": 10,
+  "completion_criteria": [...]
+}
+```
 
-## Managing Dependencies
+### Step 2 — Load the Role System Prompt
 
-The `depends_on` field tells you the execution order. **Never run a sub-agent before its dependencies are committed.**
+1. Open `roles/<role>.json` (e.g., `roles/story_writer.json`).
+2. Copy the value of the `"system_prompt"` field.
+3. Paste it as the **system message** (or first instruction) in your LLM session.
 
-To check if a dependency is satisfied:
-1. Look up the `output_file` of the dependency sub-agent in the workflow JSON
-2. Check if that file exists and is non-empty in the repository
-3. If yes: proceed. If no: run the dependency sub-agent first.
+```
+SYSTEM:
+<paste the system_prompt value from roles/story_writer.json here>
+```
 
-### Example dependency chain for Phase 1:
+### Step 3 — Provide the Inputs
 
-p1_a1 (no deps) → p1_a2 → p1_a3 → p1_a4 → p1_a5 → p1_a6 → p1_a7 ↓ p1_a4 depends on BOTH p1_a2 AND p1_a3
+For each file listed in the sub-agent's `"inputs"` array, paste the file contents into the user message, clearly labeled. For example:
 
-Code
+```
+USER:
+## Input: docs/phase_1/high_concept_document.md
 
-The complete dependency graph is shown in `workflow/sub_agent_index.md`.
-
----
-
-## Timeout Prevention Tips
-
-- **Respect the estimated_minutes field.** If a sub-agent is estimated at 8 minutes, its scope should be completable in one focused session. If you find yourself needing more than 15 minutes, the scope is too broad — escalate to the workflow maintainer.
-- **One output file at a time.** Sub-agents that list a directory (e.g. `godot/scripts/data/`) as their output should produce each file in sequence within the same session, not try to write all files simultaneously.
-- **Never combine two sub-agents** into one session. The scoping is intentional.
-- **If a session is approaching context limits**, use the "Continue" prompt before the cutoff, not after.
-
----
-
-## Timeout Prevention: The "One Page at a Time" Rule
-
-For sub-agents producing large documents (like the skill system with 144 skills), use this prompt pattern:
-
-Produce the first 24 skills (Warrior class, all 3 branches). When complete, say "READY FOR NEXT BATCH" and wait.
-
-Code
-
-Then in follow-up messages:
-Continue with the next 24 skills (Mage class, all 3 branches).
-
-Code
-
-Assemble the batches into the final output file yourself before committing.
+<paste full file contents here>
 
 ---
 
-## Phase Completion Criteria
+Your task: Write the World Lore Bible as described in your role. Save the result as `docs/phase_1/world_lore_bible.md`.
 
-A phase is considered **complete** when:
-1. All sub-agents in that phase have their `output_file` committed to the repository
-2. The final sub-agent of the phase (always a `qa_agent` reviewer) has returned a document with **no CRITICAL or HIGH severity issues** unresolved
-3. If the QA reviewer flags issues, those must be fixed (by re-running the affected sub-agent with corrected inputs) before proceeding to the next phase
+The output must satisfy all of the following completion criteria:
+- 500+ word world history from founding era to present day
+- Geography section with at least 6 named regions
+- At least 4 factions with goals, leaders, and relationships to each other
+```
 
----
+### Step 4 — Collect and Commit the Output
 
-## Resuming After Interruption
+1. Copy the LLM's entire response.
+2. Create the output file at the path specified in `"output_file"`.
+3. Commit the file to the repository with a clear message, e.g.:
+   ```
+   git add docs/phase_1/world_lore_bible.md
+   git commit -m "feat(phase-1): add world lore bible [sub-agent 1.2]"
+   git push
+   ```
 
-If a session is cut off before producing the complete output:
+### Step 5 — Verify the Completion Criteria
 
-1. Note the last complete section that was produced
-2. Start a new session with the **same system prompt and context**
-3. Include the partial output in your user message:
-You were producing [output_file] and were cut off after completing [last section]. Here is what was produced so far:
-
-[paste partial output]
-
-Continue from where you left off. Begin at [next section]. Do not repeat anything already written.
-
-Code
-4. Assemble the partial and continued outputs into the final file
-5. Commit as normal
+Before moving to the next sub-agent, check off each item in the `"completion_criteria"` array. If any criteria are not met, re-prompt the LLM with feedback, collect the revised output, and update the committed file.
 
 ---
 
-## Workflow File Reference
+## Running the QA Phase Gate Sub-Agents
 
-| File | Purpose |
-|------|---------|
-| `workflow/jrpg_studio_workflow.json` | Full workflow definition with all sub-agents |
-| `workflow/sub_agent_index.md` | Quick-reference table of all 49 sub-agents |
-| `workflow/agent_runner_guide.md` | This file — how to use the workflow |
-| `roles/*.json` | Role persona system prompts |
-| `docs/phase*/` | Generated output documents per phase |
-| `godot/` | Generated Godot 4 project files |
+Each phase ends with a QA review sub-agent (e.g., `1.7`, `2.8`, `3.13`, etc.). These sub-agents:
+
+1. Use the **`qa_agent`** role (`roles/qa_agent.json`).
+2. Receive all phase output files as input.
+3. Produce a single `qa_review_phase_N.md` file.
+4. Must output an **overall verdict of PASS** before the next phase begins.
+
+**If the verdict is FAIL:**
+1. Read the mandatory fixes list in the QA review.
+2. Re-run the relevant sub-agents from the failed phase.
+3. Update the committed files.
+4. Re-run the QA phase gate sub-agent.
 
 ---
 
-## Summary: Sub-Agent Count by Phase
+## Platform-Specific Tips
 
-| Phase | Name | Sub-Agents |
-|-------|------|-----------|
-| 1 | Concept & Story | 7 |
-| 2 | Game Design Document | 8 |
-| 3 | Development | 13 |
-| 4 | Art Production | 6 |
-| 5 | Sound Design | 5 |
-| 6 | Testing & QA | 5 |
-| 7 | Launch & Release | 5 |
-| **Total** | | **49** |
+### ChatGPT (GPT-4 / GPT-4o)
+
+- Use the **Custom Instructions** or **System prompt** field for the role system prompt.
+- For large inputs, split across multiple messages and ask the model to "hold state" between them.
+- Each sub-agent session = one new conversation (fresh context, same system prompt).
+
+### Claude (Anthropic)
+
+- Paste the system prompt into the **System** block in the API or Claude.ai interface.
+- Claude handles long inputs well; all phase inputs can typically be sent in one message.
+- Use Projects (Claude.ai) to persist role context across sub-agent sessions in the same phase.
+
+### GitHub Copilot Chat
+
+- Reference files directly using `@workspace` or by attaching them.
+- Start each sub-agent session with:
+  > *"Act as the [Role Name]. Your system prompt is: [paste system_prompt]"*
+- Use Copilot's inline chat for code-heavy sub-agents (Phase 3 Development).
+
+### Local Models (Ollama, LM Studio, etc.)
+
+- Set the system prompt via the `/system` parameter or config file.
+- For models with smaller context windows, summarize large input files to the key facts needed.
+- Recommended models: `llama3`, `mistral`, `codestral` (for Phase 3 code sub-agents).
+
+---
+
+## Sub-Agent Execution Order
+
+Sub-agents within a phase must run in numerical order (e.g., `1.1` before `1.2` before `1.3`). The `depends_on` field on each phase indicates cross-phase dependencies — never start a phase until its predecessor's QA gate has PASSED.
+
+```
+Phase 1 → [1.1 → 1.2 → 1.3 → 1.4 → 1.5 → 1.6 → 1.7 QA GATE]
+                                                         ↓ PASS
+Phase 2 → [2.1 → 2.2 → 2.3 → 2.4 → 2.5 → 2.6 → 2.7 → 2.8 QA GATE]
+                                                              ↓ PASS
+Phase 3 → [3.1 → 3.2 → ... → 3.12 → 3.13 QA GATE]
+                                          ↓ PASS
+Phase 4 → [4.1 → 4.2 → 4.3 → 4.4 → 4.5 → 4.6 QA GATE]
+                                              ↓ PASS
+Phase 5 → [5.1 → 5.2 → 5.3 → 5.4 → 5.5 QA GATE]
+                                         ↓ PASS
+Phase 6 → [6.1 → 6.2 → 6.3 → 6.4 → 6.5 QA GATE]
+                                         ↓ PASS
+Phase 7 → [7.1 → 7.2 → 7.3 → 7.4 → 7.5 FINAL SIGN-OFF]
+```
+
+---
+
+## Resuming a Failed or Interrupted Session
+
+Because every sub-agent commits exactly one file, resuming is simple:
+
+1. Check which files have been committed using `git log --oneline`.
+2. Find the last committed output file in `workflow/sub_agent_index.md`.
+3. Identify the next un-committed sub-agent.
+4. Run that sub-agent, providing all its listed input files as context.
+
+No work from previous sub-agents is lost — all outputs are committed and permanent.
+
+---
+
+## Output File Structure
+
+All sub-agent outputs are organized under `docs/`:
+
+```
+docs/
+├── phase_1/
+│   ├── high_concept_document.md      # Sub-agent 1.1
+│   ├── world_lore_bible.md           # Sub-agent 1.2
+│   ├── race_profiles.md              # Sub-agent 1.3
+│   ├── story_arc_outline.md          # Sub-agent 1.4
+│   ├── character_roster.md           # Sub-agent 1.5
+│   ├── sidequest_hooks.md            # Sub-agent 1.6
+│   └── qa_review_phase_1.md          # Sub-agent 1.7 (QA gate)
+├── phase_2/
+│   ├── combat_system_spec.md         # Sub-agent 2.1
+│   ├── skill_system_design.md        # Sub-agent 2.2
+│   ├── magic_system_design.md        # Sub-agent 2.3
+│   ├── race_ability_tables.md        # Sub-agent 2.4
+│   ├── progression_curve.md          # Sub-agent 2.5
+│   ├── item_taxonomy.md              # Sub-agent 2.6
+│   ├── enemy_roster.md               # Sub-agent 2.7
+│   └── qa_review_phase_2.md          # Sub-agent 2.8 (QA gate)
+├── phase_3/
+│   └── qa_review_phase_3.md          # Sub-agent 3.13 (QA gate)
+├── phase_4/
+│   ├── art_style_guide.md            # Sub-agent 4.1
+│   ├── character_sprite_specs.md     # Sub-agent 4.2
+│   ├── tileset_specs.md              # Sub-agent 4.3
+│   ├── ui_art_specs.md               # Sub-agent 4.4
+│   ├── vfx_specs.md                  # Sub-agent 4.5
+│   └── qa_review_phase_4.md          # Sub-agent 4.6 (QA gate)
+├── phase_5/
+│   ├── music_track_list.md           # Sub-agent 5.1
+│   ├── sfx_library.md                # Sub-agent 5.2
+│   ├── audio_bus_layout.md           # Sub-agent 5.3
+│   ├── audio_implementation_guide.md # Sub-agent 5.4
+│   └── qa_review_phase_5.md          # Sub-agent 5.5 (QA gate)
+├── phase_6/
+│   ├── combat_test_plan.md           # Sub-agent 6.1
+│   ├── progression_test_plan.md      # Sub-agent 6.2
+│   ├── world_navigation_test_plan.md # Sub-agent 6.3
+│   ├── regression_test_suite.md      # Sub-agent 6.4
+│   └── qa_review_phase_6.md          # Sub-agent 6.5 (QA gate)
+└── phase_7/
+    ├── export_config.md              # Sub-agent 7.1
+    ├── launch_checklist.md           # Sub-agent 7.2
+    ├── store_page_copy.md            # Sub-agent 7.3
+    ├── release_notes_v1.0.0.md       # Sub-agent 7.4
+    └── qa_review_final_signoff.md    # Sub-agent 7.5 (final gate)
+```
+
+Phase 3 code outputs go directly into `godot_base/`:
+
+```
+godot_base/
+├── scripts/autoloads/
+│   ├── BattleManager.gd              # Sub-agent 3.1
+│   ├── SkillSystem.gd                # Sub-agent 3.2
+│   ├── MagicSystem.gd                # Sub-agent 3.3
+│   ├── PartyManager.gd               # Sub-agent 3.4
+│   ├── ProgressionManager.gd         # Sub-agent 3.5
+│   ├── InventoryManager.gd           # Sub-agent 3.6
+│   ├── SaveLoadManager.gd            # Sub-agent 3.7
+│   ├── DialogueSystem.gd             # Sub-agent 3.8
+│   └── QuestManager.gd               # Sub-agent 3.9
+└── scenes/
+    ├── battle_scene.tscn             # Sub-agent 3.10
+    ├── world_map.tscn                # Sub-agent 3.11
+    └── hud.tscn                      # Sub-agent 3.12
+```
+
+---
+
+## Quick Reference
+
+| Sub-Agent ID | Role File | Output File |
+|---|---|---|
+| 1.1 | `roles/game_director.json` | `docs/phase_1/high_concept_document.md` |
+| 1.7 | `roles/qa_agent.json` | `docs/phase_1/qa_review_phase_1.md` |
+| 3.1 | `roles/core_developer.json` | `godot_base/scripts/autoloads/BattleManager.gd` |
+| 7.5 | `roles/qa_agent.json` | `docs/phase_7/qa_review_final_signoff.md` |
+
+> For the full table of all 49 sub-agents, see [`workflow/sub_agent_index.md`](./sub_agent_index.md).
+
+---
+
+*ChatDevV2 v3.0 — PixelForge Studios*

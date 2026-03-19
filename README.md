@@ -1,6 +1,8 @@
 # ChatDevV2 — JRPG Studio Workflow
 
-A multi-agent AI workflow system for developing a complete JRPG game using Godot 4, powered by PixelForge Studios' role-based AI pipeline.
+> A multi-agent LLM workflow simulator powering a complete 2D pixel art JRPG game development studio in Godot 4.
+>
+> **v3.0** — 49 focused sub-agents across 7 phases. Each sub-agent has one output file and completes in ≤ 10 minutes, preventing session timeouts.
 
 ## Workflow Version: 3.0 — Multi-Agent Architecture
 
@@ -11,6 +13,18 @@ Version 3.0 introduces a **multi-agent phase design** that eliminates session ti
 Previous versions assigned one agent to an entire phase. A phase like Development required generating 13+ scripts, scene files, and JSON data in a single session — routinely hitting the 59-minute timeout limit before completing.
 
 **v3.0 solves this:** 49 sub-agents across 7 phases, each with a 5–10 minute scope.
+
+### v3.0 Architecture — Why Multi-Agent?
+
+The v2.0 workflow assigned one AI agent per phase. Phase 3 (Development) required generating 13+ scripts and scene files in a single session — consistently hitting the 59-minute timeout limit. **v3.0 solves this with 49 focused sub-agents**, each scoped to exactly one output file:
+
+| Property | v2.0 | v3.0 |
+|----------|------|------|
+| Sub-agents per phase | 1 | 5–13 |
+| Output files per session | Many | **1** |
+| Estimated session time | Up to 59 min | **≤ 10 min** |
+| Resumable on failure | No | **Yes** |
+| Phase gate QA review | Optional | **Required** |
 
 ---
 
@@ -40,9 +54,18 @@ Previous versions assigned one agent to an entire phase. A phase like Developmen
 
 ## Repository Structure
 
-chatdevv2/ ├── workflow/ │ ├── jrpg_studio_workflow.json # Full v3.0 workflow definition │ ├── agent_runner_guide.md # How to run sub-agents │ └── sub_agent_index.md # Quick-reference table of all 49 sub-agents ├── roles/ │ ├── game_director.json │ ├── game_designer.json │ ├── core_developer.json │ ├── game_artist.json │ ├── sound_designer.json │ ├── game_tester.json │ ├── qa_agent.json │ ├── game_launcher.json │ └── story_writer.json ├── prompts/ # Reusable prompt templates ├── templates/ # Output document templates ├── godot_base/ # Base Godot 4 project files └── docs/ # Generated phase outputs (created by agents) ├── phase1/ # Story & concept documents ├── phase2/ # GDD documents ├── phase3/ # Code review reports ├── phase4/ # Art spec documents ├── phase5/ # Audio spec documents ├── phase6/ # QA reports and test cases └── phase7/ # Launch and release documents
+> **New to v3.0?** Start with the step-by-step guide: [`workflow/agent_runner_guide.md`](workflow/agent_runner_guide.md)
+> For a quick overview of all 49 sub-agents: [`workflow/sub_agent_index.md`](workflow/sub_agent_index.md)
 
-Code
+1. **Clone the repository** and review the `roles/` directory to understand each agent's system prompt and responsibilities.
+2. **Open your preferred LLM interface** (e.g., ChatGPT, Claude, local model via Ollama).
+3. **Load a role's system prompt** from its JSON file (`roles/<role_id>.json` → `system_prompt` field) as the LLM system message.
+4. **Run sub-agents in order** as defined in `workflow/jrpg_studio_workflow.json`. Each sub-agent reads committed files as inputs and produces exactly one output file.
+5. **Commit each output file** immediately after collection so the next sub-agent can use it as input.
+6. **Pass the QA phase gate** at the end of each phase (sub-agents 1.7, 2.8, 3.13, 4.6, 5.5, 6.5, 7.5) before proceeding to the next phase.
+7. **Iterate** — sub-agents can be re-run independently with feedback until they meet the completion criteria defined in each sub-agent entry.
+
+> **Tip:** Because each sub-agent commits one file, any failed or interrupted session can be resumed from exactly where it left off.
 
 ---
 
@@ -66,15 +89,34 @@ Code
 
 Every phase ends with a QA sub-agent review. The next phase **cannot begin** until the QA sub-agent produces a PASS report.
 
-| Gate | After Phase | Criteria Summary |
-|------|------------|-----------------|
-| Story Lock | Phase 1 | No plot holes, all races complete, story arc approved |
-| GDD Approval | Phase 2 | No undefined mechanics, balance validated |
-| Code Review | Phase 3 | Godot 4 compliance, all autoloads functional |
-| Art Consistency | Phase 4 | Palette compliance, no missing assets |
-| Audio Completeness | Phase 5 | All events mapped, all tracks specified |
-| QA Sign-Off | Phase 6 | Zero critical bugs, all tests documented |
-| Release Readiness | Phase 7 | All builds verified, store pages submitted |
+---
+
+## Directory Structure
+
+```
+chatdevv2/
+├── README.md                        # This file
+├── workflow/
+│   ├── jrpg_studio_workflow.json    # Full v3.0 pipeline — 49 sub-agents across 7 phases
+│   ├── agent_runner_guide.md        # Step-by-step guide for running sub-agents on any LLM
+│   └── sub_agent_index.md           # Quick-reference table of all 49 sub-agents
+├── roles/
+│   ├── game_director.json           # 🎬 Creative lead system prompt + metadata
+│   ├── game_designer.json           # ⚙️  Mechanics designer system prompt + metadata
+│   ├── core_developer.json          # 💻 Godot 4 developer system prompt + metadata
+│   ├── game_artist.json             # 🎨 Pixel artist system prompt + metadata
+│   ├── sound_designer.json          # 🎵 Audio director system prompt + metadata
+│   ├── game_tester.json             # 🔍 QA tester system prompt + metadata
+│   ├── qa_agent.json                # ✅ Quality gating agent system prompt + metadata
+│   ├── game_launcher.json           # 🚀 Release engineer system prompt + metadata
+│   └── story_writer.json            # 📖 Narrative designer system prompt + metadata
+├── prompts/
+│   └── (phase-specific prompt templates)
+├── templates/
+│   └── (GDD templates, test plan templates, art brief templates)
+└── godot_base/
+    └── (Godot 4 project skeleton)
+```
 
 ---
 

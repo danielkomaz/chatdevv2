@@ -1,109 +1,152 @@
-# Sub-Agent Index — ChatDevV2 Workflow v3.0
+# Sub-Agent Index — ChatDevV2 v3.0
 
-Quick-reference table of all 49 sub-agents across all 7 phases. Use this to find any sub-agent quickly, check its dependencies, and locate its output file.
-
-> **Full definitions** (scope, inputs, output descriptions, system_prompt_override) are in `workflow/jrpg_studio_workflow.json`.
-> **How to run a sub-agent** is in `workflow/agent_runner_guide.md`.
-
----
-
-## All Sub-Agents
-
-| Sub-Agent ID | Agent Name | Role | Phase | Output File | Est. Min | Depends On |
-|---|---|---|---|---|---|---|
-| p1_a1 | Game Vision Setter | game_director | 1 — Concept & Story | docs/phase1/high_concept.md | 5 | — |
-| p1_a2 | World Lore Architect | story_writer | 1 — Concept & Story | docs/phase1/world_lore.md | 8 | p1_a1 |
-| p1_a3 | Race Designer | story_writer | 1 — Concept & Story | docs/phase1/race_profiles.md | 8 | p1_a2 |
-| p1_a4 | Story Arc Writer | story_writer | 1 — Concept & Story | docs/phase1/story_arc.md | 9 | p1_a2, p1_a3 |
-| p1_a5 | Character Roster Writer | story_writer | 1 — Concept & Story | docs/phase1/character_roster.md | 9 | p1_a4 |
-| p1_a6 | Villain & Sidequest Writer | story_writer | 1 — Concept & Story | docs/phase1/villain_and_sidequests.md | 7 | p1_a5 |
-| p1_a7 | Phase 1 Story Reviewer | qa_agent | 1 — Concept & Story | docs/phase1/qa_review.md | 6 | p1_a6 |
-| p2_a1 | Combat System Designer | game_designer | 2 — Game Design Document | docs/phase2/combat_system.md | 9 | p1_a7 |
-| p2_a2 | Skill System Designer | game_designer | 2 — Game Design Document | docs/phase2/skill_system.md | 10 | p2_a1 |
-| p2_a3 | Magic System Designer | game_designer | 2 — Game Design Document | docs/phase2/magic_system.md | 10 | p2_a1 |
-| p2_a4 | Progression System Designer | game_designer | 2 — Game Design Document | docs/phase2/progression_system.md | 8 | p2_a2, p2_a3 |
-| p2_a5 | Enemy & Item Designer | game_designer | 2 — Game Design Document | docs/phase2/enemies_and_items.md | 10 | p2_a4 |
-| p2_a6 | UI & World Structure Designer | game_designer | 2 — Game Design Document | docs/phase2/ui_and_world.md | 8 | p2_a5 |
-| p2_a7 | GDD Assembler & Approver | game_director | 2 — Game Design Document | docs/phase2/GDD_master.md | 6 | p2_a6 |
-| p2_a8 | Phase 2 Balance Reviewer | qa_agent | 2 — Game Design Document | docs/phase2/qa_review.md | 7 | p2_a7 |
-| p3_a1 | Project Scaffolder | core_developer | 3 — Development | godot/project.godot | 7 | p2_a8 |
-| p3_a2 | Data Resources Developer | core_developer | 3 — Development | godot/scripts/data/ | 8 | p3_a1 |
-| p3_a3 | Battle Manager Developer | core_developer | 3 — Development | godot/scripts/battle/BattleManager.gd | 10 | p3_a2 |
-| p3_a4 | Skill & Magic System Developer | core_developer | 3 — Development | godot/scripts/battle/ | 10 | p3_a3 |
-| p3_a5 | Character & Party System Developer | core_developer | 3 — Development | godot/scripts/characters/ | 10 | p3_a2 |
-| p3_a6 | Progression & Inventory Developer | core_developer | 3 — Development | godot/scripts/systems/ | 9 | p3_a5 |
-| p3_a7 | Save, Audio & Scene Transition Developer | core_developer | 3 — Development | godot/scripts/systems/ | 10 | p3_a6 |
-| p3_a8 | Dialogue & Quest System Developer | core_developer | 3 — Development | godot/scripts/story/ | 9 | p3_a7 |
-| p3_a9 | World & Player Scripts Developer | core_developer | 3 — Development | godot/scripts/world/ | 8 | p3_a8 |
-| p3_a10 | UI Scripts Developer | core_developer | 3 — Development | godot/scripts/ui/ | 10 | p3_a9 |
-| p3_a11 | Scene Files Creator | core_developer | 3 — Development | godot/scenes/ | 8 | p3_a10 |
-| p3_a12 | Game Data JSON Creator | core_developer | 3 — Development | godot/data/ | 10 | p3_a11 |
-| p3_a13 | Phase 3 Code Reviewer | qa_agent | 3 — Development | docs/phase3/qa_review.md | 8 | p3_a12 |
-| p4_a1 | Art Style Guide Author | game_artist | 4 — Art Production | docs/phase4/art_style_guide.md | 7 | p3_a13 |
-| p4_a2 | Character Art Specs Author | game_artist | 4 — Art Production | docs/phase4/character_art_specs.md | 8 | p4_a1 |
-| p4_a3 | Enemy & Environment Art Specs Author | game_artist | 4 — Art Production | docs/phase4/enemy_and_environment_art_specs.md | 9 | p4_a2 |
-| p4_a4 | UI & Effects Art Specs Author | game_artist | 4 — Art Production | docs/phase4/ui_and_effects_art_specs.md | 8 | p4_a3 |
-| p4_a5 | Art Direction Approver | game_director | 4 — Art Production | docs/phase4/art_direction_approval.md | 5 | p4_a4 |
-| p4_a6 | Phase 4 Art Consistency Reviewer | qa_agent | 4 — Art Production | docs/phase4/qa_review.md | 6 | p4_a5 |
-| p5_a1 | Audio Direction Author | sound_designer | 5 — Sound Design | docs/phase5/audio_direction.md | 7 | p4_a6 |
-| p5_a2 | Music Track Specs Author | sound_designer | 5 — Sound Design | docs/phase5/music_track_specs.md | 9 | p5_a1 |
-| p5_a3 | SFX Library & Integration Mapper | sound_designer | 5 — Sound Design | docs/phase5/sfx_library.md | 8 | p5_a2 |
-| p5_a4 | Audio Direction Approver | game_director | 5 — Sound Design | docs/phase5/audio_approval.md | 5 | p5_a3 |
-| p5_a5 | Phase 5 Audio Completeness Reviewer | qa_agent | 5 — Sound Design | docs/phase5/qa_review.md | 6 | p5_a4 |
-| p6_a1 | Battle System Test Planner | game_tester | 6 — Testing & QA | docs/phase6/battle_test_cases.md | 9 | p5_a5 |
-| p6_a2 | Systems Test Planner | game_tester | 6 — Testing & QA | docs/phase6/systems_test_cases.md | 9 | p6_a1 |
-| p6_a3 | Story & UI Test Planner | game_tester | 6 — Testing & QA | docs/phase6/story_and_ui_test_cases.md | 8 | p6_a2 |
-| p6_a4 | Cross-Phase Consistency Auditor | qa_agent | 6 — Testing & QA | docs/phase6/cross_phase_audit.md | 10 | p6_a3 |
-| p6_a5 | Bug Tracker & Sign-Off Author | qa_agent | 6 — Testing & QA | docs/phase6/qa_signoff_checklist.md | 7 | p6_a4 |
-| p7_a1 | Export Config Author | game_launcher | 7 — Launch & Release | godot/export_presets.cfg | 6 | p6_a5 |
-| p7_a2 | Launch Checklist Author | game_launcher | 7 — Launch & Release | docs/phase7/launch_checklist.md | 8 | p7_a1 |
-| p7_a3 | Store Pages & Press Kit Author | game_launcher | 7 — Launch & Release | docs/phase7/store_pages.md | 8 | p7_a2 |
-| p7_a4 | Release Notes & Support Plan Author | game_launcher | 7 — Launch & Release | docs/phase7/release_notes_v1.0.0.md | 6 | p7_a3 |
-| p7_a5 | Final Pre-Release Smoke Tester | qa_agent | 7 — Launch & Release | docs/phase7/final_smoke_test.md | 7 | p7_a4 |
+> Quick-reference table of all 49 sub-agents across 7 phases.
+>
+> **Legend:** Each row is one LLM session. Run in numerical order within each phase. Never start a new phase until its predecessor's QA gate shows **PASS**.
 
 ---
 
-## Sub-Agent Counts by Phase
+## Phase 1 — Concept & Story (7 sub-agents · ~52 min)
 
-| Phase | Name | Sub-Agents | Total Est. Minutes |
-|-------|------|-----------|-------------------|
-| 1 | Concept & Story | 7 | 52 |
-| 2 | Game Design Document | 8 | 67 |
-| 3 | Development | 13 | 119 |
-| 4 | Art Production | 6 | 43 |
-| 5 | Sound Design | 5 | 35 |
-| 6 | Testing & QA | 5 | 43 |
-| 7 | Launch & Release | 5 | 40 |
-| **Total** | | **49** | **399** |
-
----
-
-## Sub-Agents by Role
-
-| Role | Sub-Agent IDs |
-|------|--------------|
-| game_director | p1_a1, p2_a7, p4_a5, p5_a4, p7_a1 *(via game_launcher)* |
-| story_writer | p1_a2, p1_a3, p1_a4, p1_a5, p1_a6 |
-| game_designer | p2_a1, p2_a2, p2_a3, p2_a4, p2_a5, p2_a6 |
-| core_developer | p3_a1, p3_a2, p3_a3, p3_a4, p3_a5, p3_a6, p3_a7, p3_a8, p3_a9, p3_a10, p3_a11, p3_a12 |
-| game_artist | p4_a1, p4_a2, p4_a3, p4_a4 |
-| sound_designer | p5_a1, p5_a2, p5_a3 |
-| game_tester | p6_a1, p6_a2, p6_a3 |
-| qa_agent | p1_a7, p2_a8, p3_a13, p4_a6, p5_a5, p6_a4, p6_a5, p7_a5 |
-| game_launcher | p7_a1, p7_a2, p7_a3, p7_a4 |
+| ID | Name | Role | Est. Min | Output File |
+|----|------|------|----------|-------------|
+| 1.1 | High Concept Document Author | `game_director` | 7 | `docs/phase_1/high_concept_document.md` |
+| 1.2 | World Lore Bible Author | `story_writer` | 10 | `docs/phase_1/world_lore_bible.md` |
+| 1.3 | Playable Race Profiles Author | `story_writer` | 8 | `docs/phase_1/race_profiles.md` |
+| 1.4 | 3-Act Story Arc Author | `story_writer` | 8 | `docs/phase_1/story_arc_outline.md` |
+| 1.5 | Main Character Roster Author | `story_writer` | 8 | `docs/phase_1/character_roster.md` |
+| 1.6 | Sidequest Hooks Author | `story_writer` | 6 | `docs/phase_1/sidequest_hooks.md` |
+| **1.7** | **Phase 1 QA Gate** ✅ | `qa_agent` | 5 | `docs/phase_1/qa_review_phase_1.md` |
 
 ---
 
-## Quality Gates
+## Phase 2 — Game Design Document (8 sub-agents · ~67 min)
 
-Each phase ends with a QA sub-agent whose output must PASS before the next phase begins:
+> **Requires:** Phase 1 QA gate PASS
 
-| Gate | After Phase | Enforcing Sub-Agent | Enforcing Role |
-|------|------------|---------------------|---------------|
-| Story Lock Gate | Phase 1 | p1_a7 | qa_agent |
-| GDD Approval Gate | Phase 2 | p2_a8 | qa_agent |
-| Code Review Gate | Phase 3 | p3_a13 | qa_agent |
-| Art Consistency Gate | Phase 4 | p4_a6 | qa_agent |
-| Audio Completeness Gate | Phase 5 | p5_a5 | qa_agent |
-| QA Sign-Off Gate | Phase 6 | p6_a5 | qa_agent |
-| Release Readiness Gate | Phase 7 | p7_a5 | qa_agent |
+| ID | Name | Role | Est. Min | Output File |
+|----|------|------|----------|-------------|
+| 2.1 | Combat System Designer | `game_designer` | 10 | `docs/phase_2/combat_system_spec.md` |
+| 2.2 | Skill System Designer | `game_designer` | 10 | `docs/phase_2/skill_system_design.md` |
+| 2.3 | Magic System Designer | `game_designer` | 8 | `docs/phase_2/magic_system_design.md` |
+| 2.4 | Race Ability Tables Author | `game_designer` | 7 | `docs/phase_2/race_ability_tables.md` |
+| 2.5 | Progression Curve Designer | `game_designer` | 8 | `docs/phase_2/progression_curve.md` |
+| 2.6 | Item & Equipment Taxonomy Author | `game_designer` | 7 | `docs/phase_2/item_taxonomy.md` |
+| 2.7 | Enemy Roster Designer | `game_designer` | 10 | `docs/phase_2/enemy_roster.md` |
+| **2.8** | **Phase 2 QA Gate** ✅ | `qa_agent` | 7 | `docs/phase_2/qa_review_phase_2.md` |
+
+---
+
+## Phase 3 — Development (13 sub-agents · ~119 min)
+
+> **Requires:** Phase 2 QA gate PASS
+
+| ID | Name | Role | Est. Min | Output File |
+|----|------|------|----------|-------------|
+| 3.1 | BattleManager Developer | `core_developer` | 10 | `godot_base/scripts/autoloads/BattleManager.gd` |
+| 3.2 | SkillSystem Developer | `core_developer` | 9 | `godot_base/scripts/autoloads/SkillSystem.gd` |
+| 3.3 | MagicSystem Developer | `core_developer` | 9 | `godot_base/scripts/autoloads/MagicSystem.gd` |
+| 3.4 | PartyManager Developer | `core_developer` | 8 | `godot_base/scripts/autoloads/PartyManager.gd` |
+| 3.5 | ProgressionManager Developer | `core_developer` | 8 | `godot_base/scripts/autoloads/ProgressionManager.gd` |
+| 3.6 | InventoryManager Developer | `core_developer` | 8 | `godot_base/scripts/autoloads/InventoryManager.gd` |
+| 3.7 | SaveLoadManager Developer | `core_developer` | 9 | `godot_base/scripts/autoloads/SaveLoadManager.gd` |
+| 3.8 | DialogueSystem Developer | `core_developer` | 9 | `godot_base/scripts/autoloads/DialogueSystem.gd` |
+| 3.9 | QuestManager Developer | `core_developer` | 8 | `godot_base/scripts/autoloads/QuestManager.gd` |
+| 3.10 | BattleScene Developer | `core_developer` | 10 | `godot_base/scenes/battle_scene.tscn` |
+| 3.11 | WorldMap Scene Developer | `core_developer` | 9 | `godot_base/scenes/world_map.tscn` |
+| 3.12 | HUD Scene Developer | `core_developer` | 7 | `godot_base/scenes/hud.tscn` |
+| **3.13** | **Phase 3 QA Gate** ✅ | `qa_agent` | 5 | `docs/phase_3/qa_review_phase_3.md` |
+
+---
+
+## Phase 4 — Art Production (6 sub-agents · ~43 min)
+
+> **Requires:** Phase 3 QA gate PASS
+
+| ID | Name | Role | Est. Min | Output File |
+|----|------|------|----------|-------------|
+| 4.1 | Art Style Guide Author | `game_artist` | 9 | `docs/phase_4/art_style_guide.md` |
+| 4.2 | Character Sprite Specifications Author | `game_artist` | 8 | `docs/phase_4/character_sprite_specs.md` |
+| 4.3 | Tileset Specifications Author | `game_artist` | 8 | `docs/phase_4/tileset_specs.md` |
+| 4.4 | UI Art Specifications Author | `game_artist` | 7 | `docs/phase_4/ui_art_specs.md` |
+| 4.5 | VFX & Spell Effect Specifications Author | `game_artist` | 6 | `docs/phase_4/vfx_specs.md` |
+| **4.6** | **Phase 4 QA Gate** ✅ | `qa_agent` | 5 | `docs/phase_4/qa_review_phase_4.md` |
+
+---
+
+## Phase 5 — Sound Design (5 sub-agents · ~35 min)
+
+> **Requires:** Phase 4 QA gate PASS
+
+| ID | Name | Role | Est. Min | Output File |
+|----|------|------|----------|-------------|
+| 5.1 | Music Track List Author | `sound_designer` | 8 | `docs/phase_5/music_track_list.md` |
+| 5.2 | SFX Library Author | `sound_designer` | 8 | `docs/phase_5/sfx_library.md` |
+| 5.3 | Godot AudioBus Layout Author | `sound_designer` | 6 | `docs/phase_5/audio_bus_layout.md` |
+| 5.4 | Audio Implementation Guide Author | `sound_designer` | 7 | `docs/phase_5/audio_implementation_guide.md` |
+| **5.5** | **Phase 5 QA Gate** ✅ | `qa_agent` | 6 | `docs/phase_5/qa_review_phase_5.md` |
+
+---
+
+## Phase 6 — Testing & QA (5 sub-agents · ~43 min)
+
+> **Requires:** Phase 5 QA gate PASS
+
+| ID | Name | Role | Est. Min | Output File |
+|----|------|------|----------|-------------|
+| 6.1 | Combat Test Plan Author | `game_tester` | 10 | `docs/phase_6/combat_test_plan.md` |
+| 6.2 | Progression & Inventory Test Plan Author | `game_tester` | 8 | `docs/phase_6/progression_test_plan.md` |
+| 6.3 | World Navigation Test Plan Author | `game_tester` | 8 | `docs/phase_6/world_navigation_test_plan.md` |
+| 6.4 | Regression Test Suite Author | `game_tester` | 8 | `docs/phase_6/regression_test_suite.md` |
+| **6.5** | **Phase 6 QA Gate** ✅ | `qa_agent` | 9 | `docs/phase_6/qa_review_phase_6.md` |
+
+---
+
+## Phase 7 — Launch & Release (5 sub-agents · ~40 min)
+
+> **Requires:** Phase 6 QA gate PASS
+
+| ID | Name | Role | Est. Min | Output File |
+|----|------|------|----------|-------------|
+| 7.1 | Godot Export Config Author | `game_launcher` | 7 | `docs/phase_7/export_config.md` |
+| 7.2 | Launch Checklist Author | `game_launcher` | 8 | `docs/phase_7/launch_checklist.md` |
+| 7.3 | Store Page Copy Author | `game_launcher` | 7 | `docs/phase_7/store_page_copy.md` |
+| 7.4 | Release Notes & Roadmap Author | `game_launcher` | 7 | `docs/phase_7/release_notes_v1.0.0.md` |
+| **7.5** | **Final Studio Sign-Off** 🏁 | `qa_agent` | 11 | `docs/phase_7/qa_review_final_signoff.md` |
+
+---
+
+## Summary
+
+| Phase | Sub-Agents | Est. Total Minutes |
+|-------|-----------|-------------------|
+| 1 — Concept & Story | 7 | 52 |
+| 2 — Game Design Document | 8 | 67 |
+| 3 — Development | 13 | 119 |
+| 4 — Art Production | 6 | 43 |
+| 5 — Sound Design | 5 | 35 |
+| 6 — Testing & QA | 5 | 43 |
+| 7 — Launch & Release | 5 | 40 |
+| **Total** | **49** | **399** |
+
+---
+
+## Role File Reference
+
+| Role ID | Role File | Used By Sub-Agents |
+|---------|-----------|-------------------|
+| `game_director` | `roles/game_director.json` | 1.1 |
+| `story_writer` | `roles/story_writer.json` | 1.2, 1.3, 1.4, 1.5, 1.6 |
+| `game_designer` | `roles/game_designer.json` | 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7 |
+| `core_developer` | `roles/core_developer.json` | 3.1–3.12 |
+| `game_artist` | `roles/game_artist.json` | 4.1, 4.2, 4.3, 4.4, 4.5 |
+| `sound_designer` | `roles/sound_designer.json` | 5.1, 5.2, 5.3, 5.4 |
+| `game_tester` | `roles/game_tester.json` | 6.1, 6.2, 6.3, 6.4 |
+| `game_launcher` | `roles/game_launcher.json` | 7.1, 7.2, 7.3, 7.4 |
+| `qa_agent` | `roles/qa_agent.json` | 1.7, 2.8, 3.13, 4.6, 5.5, 6.5, 7.5 |
+
+---
+
+*For step-by-step instructions on running each sub-agent, see [`workflow/agent_runner_guide.md`](./agent_runner_guide.md).*
+
+*ChatDevV2 v3.0 — PixelForge Studios*
