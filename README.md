@@ -1,6 +1,8 @@
 # ChatDevV2 — PixelForge JRPG Game Studio Workflow
 
 > A multi-agent LLM workflow simulator powering a complete 2D pixel art JRPG game development studio in Godot 4.
+>
+> **v3.0** — 49 focused sub-agents across 7 phases. Each sub-agent has one output file and completes in ≤ 10 minutes, preventing session timeouts.
 
 ---
 
@@ -11,6 +13,18 @@
 The studio — **PixelForge Studios** — is building a full-featured 2D pixel art JRPG in **Godot 4**. The game includes a turn-based battle system, a multi-race party system, a skill and magic framework, a deep narrative with branching dialogue, and a polished release pipeline targeting PC and Web platforms.
 
 ChatDevV2 enables developers, designers, and LLM researchers to simulate professional-grade game production pipelines using prompt engineering. Each role has a detailed system prompt designed to guide an LLM to reason, plan, and produce output exactly as that professional would.
+
+### v3.0 Architecture — Why Multi-Agent?
+
+The v2.0 workflow assigned one AI agent per phase. Phase 3 (Development) required generating 13+ scripts and scene files in a single session — consistently hitting the 59-minute timeout limit. **v3.0 solves this with 49 focused sub-agents**, each scoped to exactly one output file:
+
+| Property | v2.0 | v3.0 |
+|----------|------|------|
+| Sub-agents per phase | 1 | 5–13 |
+| Output files per session | Many | **1** |
+| Estimated session time | Up to 59 min | **≤ 10 min** |
+| Resumable on failure | No | **Yes** |
+| Phase gate QA review | Optional | **Required** |
 
 ---
 
@@ -50,15 +64,18 @@ ChatDevV2 enables developers, designers, and LLM researchers to simulate profess
 
 ## How to Use the Workflow
 
+> **New to v3.0?** Start with the step-by-step guide: [`workflow/agent_runner_guide.md`](workflow/agent_runner_guide.md)
+> For a quick overview of all 49 sub-agents: [`workflow/sub_agent_index.md`](workflow/sub_agent_index.md)
+
 1. **Clone the repository** and review the `roles/` directory to understand each agent's system prompt and responsibilities.
 2. **Open your preferred LLM interface** (e.g., ChatGPT, Claude, local model via Ollama).
 3. **Load a role's system prompt** from its JSON file (`roles/<role_id>.json` → `system_prompt` field) as the LLM system message.
-4. **Feed the role its inputs** as described in `workflow/jrpg_studio_workflow.json` under the relevant phase's `inputs` array.
-5. **Collect the outputs** the LLM produces and save them as artifacts for the next phase's inputs.
-6. **Run the QA Agent** (`roles/qa_agent.json`) between phases to validate outputs before proceeding.
-7. **Iterate** — roles can be re-prompted with feedback from the QA Agent or Game Director until outputs meet the completion criteria defined in each phase.
+4. **Run sub-agents in order** as defined in `workflow/jrpg_studio_workflow.json`. Each sub-agent reads committed files as inputs and produces exactly one output file.
+5. **Commit each output file** immediately after collection so the next sub-agent can use it as input.
+6. **Pass the QA phase gate** at the end of each phase (sub-agents 1.7, 2.8, 3.13, 4.6, 5.5, 6.5, 7.5) before proceeding to the next phase.
+7. **Iterate** — sub-agents can be re-run independently with feedback until they meet the completion criteria defined in each sub-agent entry.
 
-> **Tip:** You can run multiple roles in a single LLM session by switching system prompts between turns, simulating a studio standup or design review meeting.
+> **Tip:** Because each sub-agent commits one file, any failed or interrupted session can be resumed from exactly where it left off.
 
 ---
 
@@ -105,7 +122,9 @@ The game being developed by PixelForge Studios includes:
 chatdevv2/
 ├── README.md                        # This file
 ├── workflow/
-│   └── jrpg_studio_workflow.json    # Full 7-phase pipeline definition
+│   ├── jrpg_studio_workflow.json    # Full v3.0 pipeline — 49 sub-agents across 7 phases
+│   ├── agent_runner_guide.md        # Step-by-step guide for running sub-agents on any LLM
+│   └── sub_agent_index.md           # Quick-reference table of all 49 sub-agents
 ├── roles/
 │   ├── game_director.json           # 🎬 Creative lead system prompt + metadata
 │   ├── game_designer.json           # ⚙️  Mechanics designer system prompt + metadata
