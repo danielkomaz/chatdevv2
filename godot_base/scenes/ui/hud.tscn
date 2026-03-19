@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3 uid="uid://hud_scene"]
+
+[ext_resource type="Script" path="res://scripts/ui/HUD.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="PartyPanel" type="VBoxContainer" parent="."]
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 100.0
+offset_right = 120.0
+offset_bottom = 176.0
+
+[node name="TurnOrder" type="HBoxContainer" parent="."]
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 316.0
+offset_bottom = 20.0
+
+[node name="ActionMenu" type="HBoxContainer" parent="."]
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 150.0
+offset_right = 316.0
+offset_bottom = 176.0
+visible = false
+
+[node name="DamageNumbers" type="Node2D" parent="."]
